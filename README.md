@@ -9,10 +9,6 @@ Original code in C/C++ and licence can be found [here](http://www.nrel.gov/midc/
 Example of use:
 ```cs
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SPACalculator
 {
@@ -20,7 +16,7 @@ namespace SPACalculator
     {
         static void Main()
         {
-            SPACalculus.SPAData spa = new SPACalculus.SPAData();
+            SPACalculator.SPAData spa = new SPACalculator.SPAData();
 
             spa.Year = 2003;
             spa.Month = 10;
@@ -39,9 +35,9 @@ namespace SPACalculator
             spa.Slope = 30;
             spa.AzmRotation = -10;
             spa.AtmosRefract = 0.5667;
-            spa.Function = SPACalculus.CalculationMode.SPA_ALL;
+            spa.Function = SPACalculator.CalculationMode.SPA_ALL;
 
-            var result = SPACalculus.SPACalculate(ref spa);
+            var result = SPACalculator.SPACalculate(ref spa);
 
             // Check for SPA errors
             if (result == 0)
@@ -73,7 +69,6 @@ namespace SPACalculator
         }
     }
 }
-
 ```
 This code should output the following result:
 Julian Day:    2452930.31284722
