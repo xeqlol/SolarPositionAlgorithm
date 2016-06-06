@@ -70,3 +70,17 @@ namespace SPACalculator
 }
 
 ```
+This code should output the following result:
+Julian Day:    2452930.31284722
+L:             24.0182616916794 degrees
+B:             -0.000101121924800342 degrees
+R:             0.996542297353971 AU
+H:             11.1059020139134 degrees
+Delta Psi:     -0.00399840430333278 degrees
+Delta Epsilon: 0.00166656817724969 degrees
+Epsilon:       23.4404645196175 degrees
+Zenith:        50.1116220240297 degrees
+Azimuth:       194.340240510192 degrees
+Incidence:     25.1870002003532 degrees
+Sunrise:       6:12:43 Local Time
+Sunset:        17:20:19 Local Time
