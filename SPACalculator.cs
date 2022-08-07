@@ -122,23 +122,23 @@ public static class SPACalculator
 
 		RTSCalculator.CalculateGeocentricSunRightAscensionAndDeclination(ref spa);
 
-		spa.IntermediateOutput.H = ObserverHourAngle(spa.IntermediateOutput.Nu, spa.Enviroment.Longitude, spa.IntermediateOutput.Alpha);
-		spa.IntermediateOutput.Xi = SunEquatorialHorizontalParallax(spa.IntermediateOutput.EarthIntermediateModel.R);
+		spa.IntermediateOutput.H = ObserverHourAngle(spa.IntermediateOutput.Nu, spa.Enviroment.Longitude, spa.IntermediateOutput.SunItermediateModel.Alpha);
+		spa.IntermediateOutput.SunItermediateModel.Xi = SunEquatorialHorizontalParallax(spa.IntermediateOutput.EarthIntermediateModel.RadiusVector);
 
-		RightAscensionParallaxAndTopocentricDec(spa.Enviroment.Latitude, spa.Enviroment.Elevation, spa.IntermediateOutput.Xi,
-			spa.IntermediateOutput.H, spa.IntermediateOutput.Delta, ref spa.IntermediateOutput.DelAlpha, ref spa.IntermediateOutput.DeltaPrime);
+		RightAscensionParallaxAndTopocentricDec(spa.Enviroment.Latitude, spa.Enviroment.Elevation, spa.IntermediateOutput.SunItermediateModel.Xi,
+			spa.IntermediateOutput.H, spa.IntermediateOutput.SunItermediateModel.Delta, ref spa.IntermediateOutput.SunItermediateModel.DelAlpha, ref spa.IntermediateOutput.SunItermediateModel.DeltaPrime);
 
-		spa.IntermediateOutput.AlphaPrime = TopocentricRightAscension(spa.IntermediateOutput.Alpha, spa.IntermediateOutput.DelAlpha);
-		spa.IntermediateOutput.HPrime = TopocentricLocalHourAngle(spa.IntermediateOutput.H, spa.IntermediateOutput.DelAlpha);
+		spa.IntermediateOutput.SunItermediateModel.AlphaPrime = TopocentricRightAscension(spa.IntermediateOutput.SunItermediateModel.Alpha, spa.IntermediateOutput.SunItermediateModel.DelAlpha);
+		spa.IntermediateOutput.HPrime = TopocentricLocalHourAngle(spa.IntermediateOutput.H, spa.IntermediateOutput.SunItermediateModel.DelAlpha);
 
-		spa.IntermediateOutput.E0 = TopocentricElevationAngle(spa.Enviroment.Latitude, spa.IntermediateOutput.DeltaPrime, spa.IntermediateOutput.HPrime);
+		spa.IntermediateOutput.E0 = TopocentricElevationAngle(spa.Enviroment.Latitude, spa.IntermediateOutput.SunItermediateModel.DeltaPrime, spa.IntermediateOutput.HPrime);
 		spa.IntermediateOutput.DelE = AtmosphericRefractionCorrection(spa.Enviroment.Pressure, spa.Enviroment.Temperature,
 			spa.Enviroment.AtmosRefract, spa.IntermediateOutput.E0);
 		spa.IntermediateOutput.E = TopocentricElevationAngleCorrected(spa.IntermediateOutput.E0, spa.IntermediateOutput.DelE);
 
 		spa.Output.Zenith = TopocentricZenithAngle(spa.IntermediateOutput.E);
 		spa.Output.AzimuthAstro = TopocentricAzimuthAngleAstro(spa.IntermediateOutput.HPrime, spa.Enviroment.Latitude,
-			spa.IntermediateOutput.DeltaPrime);
+			spa.IntermediateOutput.SunItermediateModel.DeltaPrime);
 		spa.Output.Azimuth = TopocentricAzimuthAngle(spa.Output.AzimuthAstro);
 
 		if (spa.Mode == CalculationMode.ZAInc || spa.Mode == CalculationMode.All)

@@ -2,9 +2,15 @@ namespace SPACalculator;
 
 public static class Consts
 {
-	internal static int _lMaxSubcount = 64;
-	internal static int _bMaxSubcount = 5;
-	internal static int _rMaxSubcount = 40;
+	internal const double Pi = 3.1415926535897932384626433832795028841971;
+	internal const double SunRadius = 0.26667;
+	internal const int LCount = 6;
+	internal const int BCount = 2;
+	internal const int RCount = 5;
+	internal const int YCount = 63;
+	internal static int LMaxSubcount = 64;
+	internal static int BMaxSubcount = 5;
+	internal static int RMaxSubcount = 40;
 	internal static readonly int[] LSubcount = { 64, 34, 20, 7, 3, 1 };
 	internal static readonly int[] BSubcount = { 5, 2 };
 	internal static readonly int[] RSubcount = { 40, 10, 6, 2, 1 };
@@ -388,11 +394,4 @@ public static class Consts
 		new double[] { -3, 0, 0, 0 },
 		new double[] { -3, 0, 0, 0 }
 	};
-
-	internal const double Pi = 3.1415926535897932384626433832795028841971;
-	internal const double SunRadius = 0.26667;
-	internal const int LCount = 6;
-	internal const int BCount = 2;
-	internal const int RCount = 5;
-	internal const int YCount = 63;
 }

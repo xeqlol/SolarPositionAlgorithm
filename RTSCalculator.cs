@@ -20,14 +20,15 @@ public static class RTSCalculator
 		var sunRts = spa;
 
 		var m = SunMeanLongitude(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
-		spa.IntermediateOutput.Eot = EquationOfTime(m, spa.IntermediateOutput.Alpha,
+		spa.IntermediateOutput.Eot = EquationOfTime(m, spa.IntermediateOutput.SunItermediateModel.Alpha,
 			spa.IntermediateOutput.DelPsi, spa.IntermediateOutput.Epsilon);
 
 		sunRts.Time.Hour = sunRts.Time.Minute = 0;
 		sunRts.Time.Second = 0;
 		sunRts.TimeDeltas.DeltaUt1 = sunRts.Time.Timezone = 0.0;
 
-		sunRts.IntermediateOutput.JulianTimeModel.JDay = JulianCalculator.JulianDay(sunRts.Time.Year, sunRts.Time.Month, sunRts.Time.Day,
+		sunRts.IntermediateOutput.JulianTimeModel.JDay = JulianCalculator.JulianDay(sunRts.Time.Year, sunRts.Time.Month,
+			sunRts.Time.Day,
 			sunRts.Time.Hour,
 			sunRts.Time.Minute, sunRts.Time.Second, sunRts.TimeDeltas.DeltaUt1, sunRts.Time.Timezone);
 
@@ -40,8 +41,8 @@ public static class RTSCalculator
 		for (i = 0; i < (int)Term4.JDCount; i++)
 		{
 			CalculateGeocentricSunRightAscensionAndDeclination(ref sunRts);
-			alpha[i] = sunRts.IntermediateOutput.Alpha;
-			delta[i] = sunRts.IntermediateOutput.Delta;
+			alpha[i] = sunRts.IntermediateOutput.SunItermediateModel.Alpha;
+			delta[i] = sunRts.IntermediateOutput.SunItermediateModel.Delta;
 			sunRts.IntermediateOutput.JulianTimeModel.JDay++;
 		}
 
@@ -66,9 +67,9 @@ public static class RTSCalculator
 				hRts[i] = RtsSunAltitude(spa.Enviroment.Latitude, deltaPrime[i], hPrime[i]);
 			}
 
-			spa.IntermediateOutput.Srha = hPrime[(int)Term5.SunRise];
-			spa.IntermediateOutput.Ssha = hPrime[(int)Term5.SunSet];
-			spa.IntermediateOutput.Sta = hRts[(int)Term5.SunTransit];
+			spa.IntermediateOutput.SunItermediateModel.SunriseHourAngle = hPrime[(int)Term5.SunRise];
+			spa.IntermediateOutput.SunItermediateModel.SunsetHourAngle = hPrime[(int)Term5.SunSet];
+			spa.IntermediateOutput.SunItermediateModel.SunTransitAltitude = hRts[(int)Term5.SunTransit];
 
 			spa.Output.Suntransit = Limiters.DayFracToLocalHr(
 				mRts[(int)Term5.SunTransit] - hPrime[(int)Term5.SunTransit] / 360.0,
@@ -84,8 +85,10 @@ public static class RTSCalculator
 		}
 		else
 		{
-			spa.IntermediateOutput.Srha = spa.IntermediateOutput.Ssha = spa.IntermediateOutput.Sta =
-				spa.Output.Suntransit = spa.Output.Sunrise = spa.Output.Sunset = -99999;
+			spa.IntermediateOutput.SunItermediateModel.SunriseHourAngle =
+				spa.IntermediateOutput.SunItermediateModel.SunsetHourAngle =
+					spa.IntermediateOutput.SunItermediateModel.SunTransitAltitude =
+						spa.Output.Suntransit = spa.Output.Sunrise = spa.Output.Sunset = -99999;
 		}
 	}
 
@@ -93,61 +96,82 @@ public static class RTSCalculator
 	{
 		var x = new double[(int)Term2.TermXCount];
 
-		spa.IntermediateOutput.JulianTimeModel.JCentury = JulianCalculator.JulianCentury(spa.IntermediateOutput.JulianTimeModel.JDay);
+		spa.IntermediateOutput.JulianTimeModel.JCentury =
+			JulianCalculator.JulianCentury(spa.IntermediateOutput.JulianTimeModel.JDay);
 
-		spa.IntermediateOutput.JulianTimeModel.JEDay = JulianCalculator.JulianEphemerisDay(spa.IntermediateOutput.JulianTimeModel.JDay, spa.TimeDeltas.DeltaT);
-		spa.IntermediateOutput.JulianTimeModel.JECentury = JulianCalculator.JulianEphemerisCentury(spa.IntermediateOutput.JulianTimeModel.JEDay);
-		spa.IntermediateOutput.JulianTimeModel.JEMillennium = JulianCalculator.JulianEphemerisMillennium(spa.IntermediateOutput.JulianTimeModel.JECentury);
+		spa.IntermediateOutput.JulianTimeModel.JEDay =
+			JulianCalculator.JulianEphemerisDay(spa.IntermediateOutput.JulianTimeModel.JDay, spa.TimeDeltas.DeltaT);
+		spa.IntermediateOutput.JulianTimeModel.JECentury =
+			JulianCalculator.JulianEphemerisCentury(spa.IntermediateOutput.JulianTimeModel.JEDay);
+		spa.IntermediateOutput.JulianTimeModel.JEMillennium =
+			JulianCalculator.JulianEphemerisMillennium(spa.IntermediateOutput.JulianTimeModel.JECentury);
 
-		spa.IntermediateOutput.EarthIntermediateModel.L = SPACalculator.EarthHeliocentricLongitude(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
-		spa.IntermediateOutput.EarthIntermediateModel.B = BaseCalculator.EarthHeliocentricLatitude(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
-		spa.IntermediateOutput.EarthIntermediateModel.R = BaseCalculator.EarthRadiusVector(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
+		spa.IntermediateOutput.EarthIntermediateModel.HeliocentericLongitude =
+			SPACalculator.EarthHeliocentricLongitude(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
+		spa.IntermediateOutput.EarthIntermediateModel.HeliocentericLatitude =
+			BaseCalculator.EarthHeliocentricLatitude(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
+		spa.IntermediateOutput.EarthIntermediateModel.RadiusVector =
+			BaseCalculator.EarthRadiusVector(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
 
-		spa.IntermediateOutput.Theta = BaseCalculator.GeocentricLongitude(spa.IntermediateOutput.EarthIntermediateModel.L);
-		spa.IntermediateOutput.Beta = BaseCalculator.GeocentricLatitude(spa.IntermediateOutput.EarthIntermediateModel.B);
+		spa.IntermediateOutput.Theta =
+			BaseCalculator.GeocentricLongitude(spa.IntermediateOutput.EarthIntermediateModel.HeliocentericLongitude);
+		spa.IntermediateOutput.Beta =
+			BaseCalculator.GeocentricLatitude(spa.IntermediateOutput.EarthIntermediateModel.HeliocentericLatitude);
 
 		x[(int)Term2.TermX0] =
-			spa.IntermediateOutput.X0 = BaseCalculator.MeanElongationMoonSun(spa.IntermediateOutput.JulianTimeModel.JECentury);
-		x[(int)Term2.TermX1] = spa.IntermediateOutput.X1 = BaseCalculator.MeanAnomalySun(spa.IntermediateOutput.JulianTimeModel.JECentury);
-		x[(int)Term2.TermX2] = spa.IntermediateOutput.X2 = BaseCalculator.MeanAnomalyMoon(spa.IntermediateOutput.JulianTimeModel.JECentury);
+			spa.IntermediateOutput.SunItermediateModel.X0 =
+				BaseCalculator.MeanElongationMoonSun(spa.IntermediateOutput.JulianTimeModel.JECentury);
+		x[(int)Term2.TermX1] = spa.IntermediateOutput.SunItermediateModel.X1 =
+			BaseCalculator.MeanAnomalySun(spa.IntermediateOutput.JulianTimeModel.JECentury);
+		x[(int)Term2.TermX2] = spa.IntermediateOutput.MoonIntermediateModel.X2 =
+			BaseCalculator.MeanAnomalyMoon(spa.IntermediateOutput.JulianTimeModel.JECentury);
 		x[(int)Term2.TermX3] =
-			spa.IntermediateOutput.X3 = BaseCalculator.ArgumentLatitudeMoon(spa.IntermediateOutput.JulianTimeModel.JECentury);
+			spa.IntermediateOutput.MoonIntermediateModel.X3 =
+				BaseCalculator.ArgumentLatitudeMoon(spa.IntermediateOutput.JulianTimeModel.JECentury);
 		x[(int)Term2.TermX4] =
-			spa.IntermediateOutput.X4 = BaseCalculator.AscendingLongitudeMoon(spa.IntermediateOutput.JulianTimeModel.JECentury);
+			spa.IntermediateOutput.MoonIntermediateModel.X4 =
+				BaseCalculator.AscendingLongitudeMoon(spa.IntermediateOutput.JulianTimeModel.JECentury);
 
-		BaseCalculator.NutationLongitudeAndObliquity(spa.IntermediateOutput.JulianTimeModel.JECentury, x, ref spa.IntermediateOutput.DelPsi,
+		BaseCalculator.NutationLongitudeAndObliquity(spa.IntermediateOutput.JulianTimeModel.JECentury, x,
+			ref spa.IntermediateOutput.DelPsi,
 			ref spa.IntermediateOutput.DelEpsilon);
 
-		spa.IntermediateOutput.Epsilon0 = BaseCalculator.EclipticMeanObliquity(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
+		spa.IntermediateOutput.Epsilon0 =
+			BaseCalculator.EclipticMeanObliquity(spa.IntermediateOutput.JulianTimeModel.JEMillennium);
 		spa.IntermediateOutput.Epsilon =
 			BaseCalculator.EclipticTrueObliquity(spa.IntermediateOutput.DelEpsilon, spa.IntermediateOutput.Epsilon0);
 
-		spa.IntermediateOutput.DelTau = BaseCalculator.AberrationCorrection(spa.IntermediateOutput.EarthIntermediateModel.R);
-		spa.IntermediateOutput.Lamda = BaseCalculator.ApparentSunLongitude(spa.IntermediateOutput.Theta,
+		spa.IntermediateOutput.DelTau =
+			BaseCalculator.AberrationCorrection(spa.IntermediateOutput.EarthIntermediateModel.RadiusVector);
+		spa.IntermediateOutput.SunItermediateModel.Lamda = BaseCalculator.ApparentSunLongitude(
+			spa.IntermediateOutput.Theta,
 			spa.IntermediateOutput.DelPsi, spa.IntermediateOutput.DelTau);
 		spa.IntermediateOutput.Nu0 =
-			BaseCalculator.GreenwichMeanSiderealTime(spa.IntermediateOutput.JulianTimeModel.JDay, spa.IntermediateOutput.JulianTimeModel.JCentury);
+			BaseCalculator.GreenwichMeanSiderealTime(spa.IntermediateOutput.JulianTimeModel.JDay,
+				spa.IntermediateOutput.JulianTimeModel.JCentury);
 		spa.IntermediateOutput.Nu = BaseCalculator.GreenwichSiderealTime(spa.IntermediateOutput.Nu0,
 			spa.IntermediateOutput.DelPsi, spa.IntermediateOutput.Epsilon);
 
-		spa.IntermediateOutput.Alpha = BaseCalculator.GeocentricRightAscension(spa.IntermediateOutput.Lamda,
+		spa.IntermediateOutput.SunItermediateModel.Alpha = BaseCalculator.GeocentricRightAscension(
+			spa.IntermediateOutput.SunItermediateModel.Lamda,
 			spa.IntermediateOutput.Epsilon, spa.IntermediateOutput.Beta);
-		spa.IntermediateOutput.Delta = BaseCalculator.GeocentricDeclination(spa.IntermediateOutput.Beta,
-			spa.IntermediateOutput.Epsilon, spa.IntermediateOutput.Lamda);
+		spa.IntermediateOutput.SunItermediateModel.Delta = BaseCalculator.GeocentricDeclination(
+			spa.IntermediateOutput.Beta,
+			spa.IntermediateOutput.Epsilon, spa.IntermediateOutput.SunItermediateModel.Lamda);
 	}
 
 	private static double SunMeanLongitude(double jme)
 	{
 		return Limiters.LimitDegrees(280.4664567 + jme * (360007.6982779 +
-														  jme * (0.03032028 + jme * (1 / 49931.0 +
-															  jme * (-1 / 15300.0 +
-																	 jme * (-1 / 2000000.0))))));
+		                                                  jme * (0.03032028 + jme * (1 / 49931.0 +
+			                                                  jme * (-1 / 15300.0 +
+			                                                         jme * (-1 / 2000000.0))))));
 	}
 
 	private static double EquationOfTime(double m, double alpha, double delPsi, double epsilon)
 	{
 		return Limiters.LimitMinutes(4.0 * (m - 0.0057183 - alpha +
-											delPsi * Math.Cos(DegRadCalculator.DegToRad(epsilon))));
+		                                    delPsi * Math.Cos(DegRadCalculator.DegToRad(epsilon))));
 	}
 
 	private static double ApproxSunTransitTime(double alphaZero, double longitude, double nu)
@@ -161,8 +185,8 @@ public static class RTSCalculator
 		var latitudeRad = DegRadCalculator.DegToRad(latitude);
 		var deltaZeroRad = DegRadCalculator.DegToRad(deltaZero);
 		var argument = (Math.Sin(DegRadCalculator.DegToRad(h0Prime)) -
-						Math.Sin(latitudeRad) * Math.Sin(deltaZeroRad)) /
-					   (Math.Cos(latitudeRad) * Math.Cos(deltaZeroRad));
+		                Math.Sin(latitudeRad) * Math.Sin(deltaZeroRad)) /
+		               (Math.Cos(latitudeRad) * Math.Cos(deltaZeroRad));
 
 		if (Math.Abs(argument) <= 1) h0 = Limiters.LimitDegrees180(DegRadCalculator.RadToDeg(Math.Acos(argument)));
 
@@ -195,8 +219,8 @@ public static class RTSCalculator
 		var deltaPrimeRad = DegRadCalculator.DegToRad(deltaPrime);
 
 		return DegRadCalculator.RadToDeg(Math.Asin(Math.Sin(latitudeRad) * Math.Sin(deltaPrimeRad) +
-												   Math.Cos(latitudeRad) * Math.Cos(deltaPrimeRad) *
-												   Math.Cos(DegRadCalculator.DegToRad(hPrime))));
+		                                           Math.Cos(latitudeRad) * Math.Cos(deltaPrimeRad) *
+		                                           Math.Cos(DegRadCalculator.DegToRad(hPrime))));
 	}
 
 	private static double SunRiseAndSet(ref double[] mRts, ref double[] hRts, ref double[] deltaPrime,

@@ -17,7 +17,8 @@ public static class JulianCalculator
 
 		if (!(julianDay > 2299160.0)) return julianDay;
 
-		double a = year / 100;
+		// ReSharper disable once RedundantCast
+		double a = (int)(year / 100);
 		julianDay += 2 - a + (int)(a / 4);
 
 		return julianDay;

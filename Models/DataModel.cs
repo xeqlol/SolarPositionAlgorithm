@@ -1,4 +1,5 @@
 using SPACalculator.Enums;
+using SPACalculator.Models.IntermediateModels;
 
 namespace SPACalculator.Models;
 

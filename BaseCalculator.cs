@@ -147,7 +147,7 @@ public static class BaseCalculator
 
 	private static double XYTermSummation(int i, double[] x = null)
 	{
-		x = x ?? new double[(int)Term2.TermXCount];
+		x ??= new double[(int)Term2.TermXCount];
 		int j;
 		double sum = 0;
 
