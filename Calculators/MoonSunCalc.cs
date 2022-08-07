@@ -1,4 +1,4 @@
-namespace SPACalculator;
+namespace SPACalculator.Calculators;
 
 public static class MoonSunCalc
 {

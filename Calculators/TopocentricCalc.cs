@@ -1,4 +1,4 @@
-namespace SPACalculator;
+namespace SPACalculator.Calculators;
 
 public static class TopocentricCalc
 {
@@ -9,7 +9,7 @@ public static class TopocentricCalc
 		var deltaPrimeRad = DegRadCalc.DegToRad(deltaPrime);
 
 		var y = Math.Cos(hPrimeRad) * Math.Sin(latRad) -
-		        Math.Tan(deltaPrimeRad) * Math.Cos(latRad);
+				Math.Tan(deltaPrimeRad) * Math.Cos(latRad);
 		var o = Math.Atan2(Math.Sin(hPrimeRad), y);
 
 		return Limiters.LimitDegrees(DegRadCalc.RadToDeg(o));

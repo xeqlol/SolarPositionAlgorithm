@@ -1,7 +1,7 @@
 using SPACalculator.Enums;
 using SPACalculator.Models;
 
-namespace SPACalculator;
+namespace SPACalculator.Calculators;
 
 public static class RTSCalc
 {
@@ -166,15 +166,15 @@ public static class RTSCalc
 	private static double SunMeanLongitude(double jme)
 	{
 		return Limiters.LimitDegrees(280.4664567 + jme * (360007.6982779 +
-		                                                  jme * (0.03032028 + jme * (1 / 49931.0 +
-			                                                  jme * (-1 / 15300.0 +
-			                                                         jme * (-1 / 2000000.0))))));
+														  jme * (0.03032028 + jme * (1 / 49931.0 +
+															  jme * (-1 / 15300.0 +
+																	 jme * (-1 / 2000000.0))))));
 	}
 
 	private static double EquationOfTime(double m, double alpha, double delPsi, double epsilon)
 	{
 		return Limiters.LimitMinutes(4.0 * (m - 0.0057183 - alpha +
-		                                    delPsi * Math.Cos(DegRadCalc.DegToRad(epsilon))));
+											delPsi * Math.Cos(DegRadCalc.DegToRad(epsilon))));
 	}
 
 	private static double ApproxSunTransitTime(double alphaZero, double longitude, double nu)
@@ -188,8 +188,8 @@ public static class RTSCalc
 		var latitudeRad = DegRadCalc.DegToRad(latitude);
 		var deltaZeroRad = DegRadCalc.DegToRad(deltaZero);
 		var argument = (Math.Sin(DegRadCalc.DegToRad(h0Prime)) -
-		                Math.Sin(latitudeRad) * Math.Sin(deltaZeroRad)) /
-		               (Math.Cos(latitudeRad) * Math.Cos(deltaZeroRad));
+						Math.Sin(latitudeRad) * Math.Sin(deltaZeroRad)) /
+					   (Math.Cos(latitudeRad) * Math.Cos(deltaZeroRad));
 
 		if (Math.Abs(argument) <= 1) h0 = Limiters.LimitDegrees180(DegRadCalc.RadToDeg(Math.Acos(argument)));
 
@@ -222,8 +222,8 @@ public static class RTSCalc
 		var deltaPrimeRad = DegRadCalc.DegToRad(deltaPrime);
 
 		return DegRadCalc.RadToDeg(Math.Asin(Math.Sin(latitudeRad) * Math.Sin(deltaPrimeRad) +
-		                                     Math.Cos(latitudeRad) * Math.Cos(deltaPrimeRad) *
-		                                     Math.Cos(DegRadCalc.DegToRad(hPrime))));
+											 Math.Cos(latitudeRad) * Math.Cos(deltaPrimeRad) *
+											 Math.Cos(DegRadCalc.DegToRad(hPrime))));
 	}
 
 	private static double SunRiseAndSet(ref double[] mRts, ref double[] hRts, ref double[] deltaPrime,

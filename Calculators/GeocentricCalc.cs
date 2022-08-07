@@ -1,4 +1,4 @@
-namespace SPACalculator;
+namespace SPACalculator.Calculators;
 
 public static class GeocentricCalc
 {
@@ -9,7 +9,7 @@ public static class GeocentricCalc
 		var betaRad = DegRadCalc.DegToRad(beta);
 
 		var y = Math.Sin(lamdaRad) * Math.Cos(epsilonRad) -
-		        Math.Tan(betaRad) * Math.Sin(epsilonRad);
+				Math.Tan(betaRad) * Math.Sin(epsilonRad);
 		var o = Math.Atan2(y, Math.Cos(lamdaRad));
 
 		return Limiters.LimitDegrees(DegRadCalc.RadToDeg(o));
@@ -22,7 +22,7 @@ public static class GeocentricCalc
 		var lamdaRad = DegRadCalc.DegToRad(lamda);
 
 		var d = Math.Sin(betaRad) * Math.Cos(epsilonRad) +
-		        Math.Cos(betaRad) * Math.Sin(epsilonRad) * Math.Sin(lamdaRad);
+				Math.Cos(betaRad) * Math.Sin(epsilonRad) * Math.Sin(lamdaRad);
 		var o = Math.Asin(d);
 
 		return DegRadCalc.RadToDeg(o);

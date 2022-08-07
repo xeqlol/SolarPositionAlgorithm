@@ -1,6 +1,6 @@
 using SPACalculator.Enums;
 
-namespace SPACalculator;
+namespace SPACalculator.Calculators;
 
 public static class EarthCalc
 {
@@ -26,7 +26,7 @@ public static class EarthCalc
 		return EarthValues(sum, Consts.RCount, jme);
 	}
 
-	public static double EarthPeriodicTermSummation(double[][] terms, int count, double jme)
+	private static double EarthPeriodicTermSummation(double[][] terms, int count, double jme)
 	{
 		int i;
 		double sum = 0;
@@ -38,7 +38,7 @@ public static class EarthCalc
 		return sum;
 	}
 
-	public static double EarthValues(double[] termSum, int count, double jme)
+	private static double EarthValues(double[] termSum, int count, double jme)
 	{
 		int i;
 		double sum = 0;
@@ -57,8 +57,8 @@ public static class EarthCalc
 		int i;
 
 		for (i = 0; i < Consts.LCount; i++)
-			sum[i] = EarthCalc.EarthPeriodicTermSummation(Consts.LTerms[i], Consts.LSubcount[i], jme);
+			sum[i] = EarthPeriodicTermSummation(Consts.LTerms[i], Consts.LSubcount[i], jme);
 
-		return Limiters.LimitDegrees(DegRadCalc.RadToDeg(EarthCalc.EarthValues(sum, Consts.LCount, jme)));
+		return Limiters.LimitDegrees(DegRadCalc.RadToDeg(EarthValues(sum, Consts.LCount, jme)));
 	}
 }

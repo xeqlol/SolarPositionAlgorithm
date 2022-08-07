@@ -1,4 +1,4 @@
-namespace SPACalculator;
+namespace SPACalculator.Calculators;
 
 public static class JulianCalc
 {
@@ -18,8 +18,8 @@ public static class JulianCalc
 		if (!(julianDay > 2299160.0)) return julianDay;
 
 		// ReSharper disable once RedundantCast
-		double a = (int)(year / 100);
-		julianDay += 2 - a + (int)(a / 4);
+		var a = year / 100.0;
+		julianDay += 2 - (int)a + (int)(a / 4);
 
 		return julianDay;
 	}
