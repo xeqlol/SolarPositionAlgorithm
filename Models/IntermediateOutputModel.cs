@@ -13,11 +13,6 @@ public class IntermediateOutputModel
 	public double AlphaPrime;
 
 	/// <summary>
-	///     earth heliocentric latitude [degrees]
-	/// </summary>
-	public double B;
-
-	/// <summary>
 	///     geocentric latitude [degrees]
 	/// </summary>
 	public double Beta;
@@ -92,35 +87,7 @@ public class IntermediateOutputModel
 	/// </summary>
 	public double HPrime;
 
-	/// <summary>
-	///     Julian century
-	/// </summary>
-	public double Jc;
-
-	/// <summary>
-	///     Julian ephemeris century
-	/// </summary>
-	public double Jce;
-
-	/// <summary>
-	///     Julian day
-	/// </summary>
-	public double Jd;
-
-	/// <summary>
-	///     Julian ephemeris day
-	/// </summary>
-	public double Jde;
-
-	/// <summary>
-	///     Julian ephemeris millennium
-	/// </summary>
-	public double Jme;
-
-	/// <summary>
-	///     earth heliocentric longitude [degrees]
-	/// </summary>
-	public double L;
+	
 
 	/// <summary>
 	///     apparent sun longitude [degrees]
@@ -137,10 +104,7 @@ public class IntermediateOutputModel
 	/// </summary>
 	public double Nu0;
 
-	/// <summary>
-	///     earth radius vector [Astronomical Units, AU]
-	/// </summary>
-	public double R;
+	
 
 	/// <summary>
 	///     sunrise hour angle [degrees]
@@ -191,4 +155,9 @@ public class IntermediateOutputModel
 	///     sun equatorial horizontal parallax [degrees]
 	/// </summary>
 	public double Xi;
+
+
+	public JulianTimeModel JulianTimeModel { get; set; }
+
+	public EarthIntermediateModel EarthIntermediateModel { get; set; }
 }
