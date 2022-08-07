@@ -1,4 +1,4 @@
-namespace SPACalculator;
+namespace SPACalculator.Enums;
 
 internal enum Term3
 {

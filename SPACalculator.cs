@@ -1,3 +1,6 @@
+using SPACalculator.Enums;
+using SPACalculator.Models;
+
 namespace SPACalculator;
 
 public static class SPACalculator
@@ -73,31 +76,31 @@ public static class SPACalculator
 		return ((a * x + b) * x + c) * x + d;
 	}
 
-	public static int ValidateInputs(ref SPAData spa)
+	public static int ValidateInputs(ref DataModel spa)
 	{
-		if (spa.Year < -2000 || spa.Year > 6000) return 1;
-		if (spa.Month < 1 || spa.Month > 12) return 2;
-		if (spa.Day < 1 || spa.Day > 31) return 3;
-		if (spa.Hour < 0 || spa.Hour > 24) return 4;
-		if (spa.Minute < 0 || spa.Minute > 59) return 5;
-		if (spa.Second < 0 || spa.Second >= 60) return 6;
-		if (spa.Pressure < 0 || spa.Pressure > 5000) return 12;
-		if (spa.Temperature <= -273 || spa.Temperature > 6000) return 13;
-		if (spa.DeltaUt1 <= -1 || spa.DeltaUt1 >= 1) return 17;
-		if (spa.Hour == 24 && spa.Minute > 0) return 5;
-		if (spa.Hour == 24 && spa.Second > 0) return 6;
+		if (spa.Time.Year < -2000 || spa.Time.Year > 6000) return 1;
+		if (spa.Time.Month < 1 || spa.Time.Month > 12) return 2;
+		if (spa.Time.Day < 1 || spa.Time.Day > 31) return 3;
+		if (spa.Time.Hour < 0 || spa.Time.Hour > 24) return 4;
+		if (spa.Time.Minute < 0 || spa.Time.Minute > 59) return 5;
+		if (spa.Time.Second < 0 || spa.Time.Second >= 60) return 6;
+		if (spa.Enviroment.Pressure < 0 || spa.Enviroment.Pressure > 5000) return 12;
+		if (spa.Enviroment.Temperature <= -273 || spa.Enviroment.Temperature > 6000) return 13;
+		if (spa.TimeDeltas.DeltaUt1 <= -1 || spa.TimeDeltas.DeltaUt1 >= 1) return 17;
+		if (spa.Time.Hour == 24 && spa.Time.Minute > 0) return 5;
+		if (spa.Time.Hour == 24 && spa.Time.Second > 0) return 6;
 
-		if (Math.Abs(spa.DeltaT) > 8000) return 7;
-		if (Math.Abs(spa.Timezone) > 18) return 8;
-		if (Math.Abs(spa.Longitude) > 180) return 9;
-		if (Math.Abs(spa.Latitude) > 90) return 10;
-		if (Math.Abs(spa.AtmosRefract) > 5) return 16;
-		if (spa.Elevation < -6500000) return 11;
+		if (Math.Abs(spa.TimeDeltas.DeltaT) > 8000) return 7;
+		if (Math.Abs(spa.Time.Timezone) > 18) return 8;
+		if (Math.Abs(spa.Enviroment.Longitude) > 180) return 9;
+		if (Math.Abs(spa.Enviroment.Latitude) > 90) return 10;
+		if (Math.Abs(spa.Enviroment.AtmosRefract) > 5) return 16;
+		if (spa.Enviroment.Elevation < -6500000) return 11;
 
-		if (spa.Function == CalculationMode.ZAInc || spa.Function == CalculationMode.All)
+		if (spa.Mode == CalculationMode.ZAInc || spa.Mode == CalculationMode.All)
 		{
-			if (Math.Abs(spa.Slope) > 360) return 14;
-			if (Math.Abs(spa.AzmRotation) > 360) return 15;
+			if (Math.Abs(spa.Enviroment.Slope) > 360) return 14;
+			if (Math.Abs(spa.Enviroment.AzmRotation) > 360) return 15;
 		}
 
 		return 0;
@@ -490,44 +493,44 @@ public static class SPACalculator
 			 Math.Sin(DegToRad(hPrime[sun])));
 	}
 
-	private static void CalculateGeocentricSunRightAscensionAndDeclination(ref SPAData spa)
+	private static void CalculateGeocentricSunRightAscensionAndDeclination(ref DataModel spa)
 	{
 		var x = new double[(int)Term2.TermXCount];
 
-		spa.Jc = JulianCentury(spa.Jd);
+		spa.IntermediateOutput.Jc = JulianCentury(spa.IntermediateOutput.Jd);
 
-		spa.Jde = JulianEphemerisDay(spa.Jd, spa.DeltaT);
-		spa.Jce = JulianEphemerisCentury(spa.Jde);
-		spa.Jme = JulianEphemerisMillennium(spa.Jce);
+		spa.IntermediateOutput.Jde = JulianEphemerisDay(spa.IntermediateOutput.Jd, spa.TimeDeltas.DeltaT);
+		spa.IntermediateOutput.Jce = JulianEphemerisCentury(spa.IntermediateOutput.Jde);
+		spa.IntermediateOutput.Jme = JulianEphemerisMillennium(spa.IntermediateOutput.Jce);
 
-		spa.L = EarthHeliocentricLongitude(spa.Jme);
-		spa.B = EarthHeliocentricLatitude(spa.Jme);
-		spa.R = EarthRadiusVector(spa.Jme);
+		spa.IntermediateOutput.L = EarthHeliocentricLongitude(spa.IntermediateOutput.Jme);
+		spa.IntermediateOutput.B = EarthHeliocentricLatitude(spa.IntermediateOutput.Jme);
+		spa.IntermediateOutput.R = EarthRadiusVector(spa.IntermediateOutput.Jme);
 
-		spa.Theta = GeocentricLongitude(spa.L);
-		spa.Beta = GeocentricLatitude(spa.B);
+		spa.IntermediateOutput.Theta = GeocentricLongitude(spa.IntermediateOutput.L);
+		spa.IntermediateOutput.Beta = GeocentricLatitude(spa.IntermediateOutput.B);
 
-		x[(int)Term2.TermX0] = spa.X0 = MeanElongationMoonSun(spa.Jce);
-		x[(int)Term2.TermX1] = spa.X1 = MeanAnomalySun(spa.Jce);
-		x[(int)Term2.TermX2] = spa.X2 = MeanAnomalyMoon(spa.Jce);
-		x[(int)Term2.TermX3] = spa.X3 = ArgumentLatitudeMoon(spa.Jce);
-		x[(int)Term2.TermX4] = spa.X4 = AscendingLongitudeMoon(spa.Jce);
+		x[(int)Term2.TermX0] = spa.IntermediateOutput.X0 = MeanElongationMoonSun(spa.IntermediateOutput.Jce);
+		x[(int)Term2.TermX1] = spa.IntermediateOutput.X1 = MeanAnomalySun(spa.IntermediateOutput.Jce);
+		x[(int)Term2.TermX2] = spa.IntermediateOutput.X2 = MeanAnomalyMoon(spa.IntermediateOutput.Jce);
+		x[(int)Term2.TermX3] = spa.IntermediateOutput.X3 = ArgumentLatitudeMoon(spa.IntermediateOutput.Jce);
+		x[(int)Term2.TermX4] = spa.IntermediateOutput.X4 = AscendingLongitudeMoon(spa.IntermediateOutput.Jce);
 
-		NutationLongitudeAndObliquity(spa.Jce, x, ref spa.DelPsi, ref spa.DelEpsilon);
+		NutationLongitudeAndObliquity(spa.IntermediateOutput.Jce, x, ref spa.IntermediateOutput.DelPsi, ref spa.IntermediateOutput.DelEpsilon);
 
-		spa.Epsilon0 = EclipticMeanObliquity(spa.Jme);
-		spa.Epsilon = EclipticTrueObliquity(spa.DelEpsilon, spa.Epsilon0);
+		spa.IntermediateOutput.Epsilon0 = EclipticMeanObliquity(spa.IntermediateOutput.Jme);
+		spa.IntermediateOutput.Epsilon = EclipticTrueObliquity(spa.IntermediateOutput.DelEpsilon, spa.IntermediateOutput.Epsilon0);
 
-		spa.DelTau = AberrationCorrection(spa.R);
-		spa.Lamda = ApparentSunLongitude(spa.Theta, spa.DelPsi, spa.DelTau);
-		spa.Nu0 = GreenwichMeanSiderealTime(spa.Jd, spa.Jc);
-		spa.Nu = GreenwichSiderealTime(spa.Nu0, spa.DelPsi, spa.Epsilon);
+		spa.IntermediateOutput.DelTau = AberrationCorrection(spa.IntermediateOutput.R);
+		spa.IntermediateOutput.Lamda = ApparentSunLongitude(spa.IntermediateOutput.Theta, spa.IntermediateOutput.DelPsi, spa.IntermediateOutput.DelTau);
+		spa.IntermediateOutput.Nu0 = GreenwichMeanSiderealTime(spa.IntermediateOutput.Jd, spa.IntermediateOutput.Jc);
+		spa.IntermediateOutput.Nu = GreenwichSiderealTime(spa.IntermediateOutput.Nu0, spa.IntermediateOutput.DelPsi, spa.IntermediateOutput.Epsilon);
 
-		spa.Alpha = GeocentricRightAscension(spa.Lamda, spa.Epsilon, spa.Beta);
-		spa.Delta = GeocentricDeclination(spa.Beta, spa.Epsilon, spa.Lamda);
+		spa.IntermediateOutput.Alpha = GeocentricRightAscension(spa.IntermediateOutput.Lamda, spa.IntermediateOutput.Epsilon, spa.IntermediateOutput.Beta);
+		spa.IntermediateOutput.Delta = GeocentricDeclination(spa.IntermediateOutput.Beta, spa.IntermediateOutput.Epsilon, spa.IntermediateOutput.Lamda);
 	}
 
-	private static void CalculateEOTAndSunRiseTransitSet(ref SPAData spa)
+	private static void CalculateEOTAndSunRiseTransitSet(ref DataModel spa)
 	{
 		double[] alpha = new double[(int)Term4.JDCount], delta = new double[(int)Term4.JDCount];
 		double[] mRts = new double[(int)Term5.SunCount],
@@ -536,37 +539,37 @@ public static class SPACalculator
 		double[] alphaPrime = new double[(int)Term5.SunCount],
 			deltaPrime = new double[(int)Term5.SunCount],
 			hPrime = new double[(int)Term5.SunCount];
-		var h0Prime = -1 * (Consts.SunRadius + spa.AtmosRefract);
+		var h0Prime = -1 * (Consts.SunRadius + spa.Enviroment.AtmosRefract);
 		int i;
 
 		var sunRts = spa;
 
-		var m = SunMeanLongitude(spa.Jme);
-		spa.Eot = EquationOfTime(m, spa.Alpha, spa.DelPsi, spa.Epsilon);
+		var m = SunMeanLongitude(spa.IntermediateOutput.Jme);
+		spa.IntermediateOutput.Eot = EquationOfTime(m, spa.IntermediateOutput.Alpha, spa.IntermediateOutput.DelPsi, spa.IntermediateOutput.Epsilon);
 
-		sunRts.Hour = sunRts.Minute = 0;
-		sunRts.Second = 0;
-		sunRts.DeltaUt1 = sunRts.Timezone = 0.0;
+		sunRts.Time.Hour = sunRts.Time.Minute = 0;
+		sunRts.Time.Second = 0;
+		sunRts.TimeDeltas.DeltaUt1 = sunRts.Time.Timezone = 0.0;
 
-		sunRts.Jd = JulianDay(sunRts.Year, sunRts.Month, sunRts.Day, sunRts.Hour,
-			sunRts.Minute, sunRts.Second, sunRts.DeltaUt1, sunRts.Timezone);
+		sunRts.IntermediateOutput.Jd = JulianDay(sunRts.Time.Year, sunRts.Time.Month, sunRts.Time.Day, sunRts.Time.Hour,
+			sunRts.Time.Minute, sunRts.Time.Second, sunRts.TimeDeltas.DeltaUt1, sunRts.Time.Timezone);
 
 		CalculateGeocentricSunRightAscensionAndDeclination(ref sunRts);
-		var nu = sunRts.Nu;
+		var nu = sunRts.IntermediateOutput.Nu;
 
-		sunRts.DeltaT = 0;
-		sunRts.Jd--;
+		sunRts.TimeDeltas.DeltaT = 0;
+		sunRts.IntermediateOutput.Jd--;
 
 		for (i = 0; i < (int)Term4.JDCount; i++)
 		{
 			CalculateGeocentricSunRightAscensionAndDeclination(ref sunRts);
-			alpha[i] = sunRts.Alpha;
-			delta[i] = sunRts.Delta;
-			sunRts.Jd++;
+			alpha[i] = sunRts.IntermediateOutput.Alpha;
+			delta[i] = sunRts.IntermediateOutput.Delta;
+			sunRts.IntermediateOutput.Jd++;
 		}
 
-		mRts[(int)Term5.SunTransit] = ApproxSunTransitTime(alpha[(int)Term4.JDZero], spa.Longitude, nu);
-		var h0 = SunHourAngleAtRiseSet(spa.Latitude, delta[(int)Term4.JDZero], h0Prime);
+		mRts[(int)Term5.SunTransit] = ApproxSunTransitTime(alpha[(int)Term4.JDZero], spa.Enviroment.Longitude, nu);
+		var h0 = SunHourAngleAtRiseSet(spa.Enviroment.Latitude, delta[(int)Term4.JDZero], h0Prime);
 
 		if (h0 >= 0)
 		{
@@ -576,70 +579,70 @@ public static class SPACalculator
 			{
 				nuRts[i] = nu + 360.985647 * mRts[i];
 
-				var n = mRts[i] + spa.DeltaT / 86400.0;
+				var n = mRts[i] + spa.TimeDeltas.DeltaT / 86400.0;
 				alphaPrime[i] = RtsAlphaDeltaPrime(ref alpha, n);
 				deltaPrime[i] = RtsAlphaDeltaPrime(ref delta, n);
 
-				hPrime[i] = LimitDegrees180Pm(nuRts[i] + spa.Longitude - alphaPrime[i]);
+				hPrime[i] = LimitDegrees180Pm(nuRts[i] + spa.Enviroment.Longitude - alphaPrime[i]);
 
-				hRts[i] = RtsSunAltitude(spa.Latitude, deltaPrime[i], hPrime[i]);
+				hRts[i] = RtsSunAltitude(spa.Enviroment.Latitude, deltaPrime[i], hPrime[i]);
 			}
 
-			spa.Srha = hPrime[(int)Term5.SunRise];
-			spa.Ssha = hPrime[(int)Term5.SunSet];
-			spa.Sta = hRts[(int)Term5.SunTransit];
+			spa.IntermediateOutput.Srha = hPrime[(int)Term5.SunRise];
+			spa.IntermediateOutput.Ssha = hPrime[(int)Term5.SunSet];
+			spa.IntermediateOutput.Sta = hRts[(int)Term5.SunTransit];
 
-			spa.Suntransit =
+			spa.Output.Suntransit =
 				DayFracToLocalHr(mRts[(int)Term5.SunTransit] - hPrime[(int)Term5.SunTransit] / 360.0,
-					spa.Timezone);
+					spa.Time.Timezone);
 
-			spa.Sunrise = DayFracToLocalHr(SunRiseAndSet(ref mRts, ref hRts, ref deltaPrime,
-				spa.Latitude, ref hPrime, h0Prime, (int)Term5.SunRise), spa.Timezone);
+			spa.Output.Sunrise = DayFracToLocalHr(SunRiseAndSet(ref mRts, ref hRts, ref deltaPrime,
+				spa.Enviroment.Latitude, ref hPrime, h0Prime, (int)Term5.SunRise), spa.Time.Timezone);
 
-			spa.Sunset = DayFracToLocalHr(SunRiseAndSet(ref mRts, ref hRts, ref deltaPrime,
-				spa.Latitude, ref hPrime, h0Prime, (int)Term5.SunSet), spa.Timezone);
+			spa.Output.Sunset = DayFracToLocalHr(SunRiseAndSet(ref mRts, ref hRts, ref deltaPrime,
+				spa.Enviroment.Latitude, ref hPrime, h0Prime, (int)Term5.SunSet), spa.Time.Timezone);
 		}
 		else
 		{
-			spa.Srha = spa.Ssha = spa.Sta = spa.Suntransit = spa.Sunrise = spa.Sunset = -99999;
+			spa.IntermediateOutput.Srha = spa.IntermediateOutput.Ssha = spa.IntermediateOutput.Sta = spa.Output.Suntransit = spa.Output.Sunrise = spa.Output.Sunset = -99999;
 		}
 	}
 
-	public static int SPACalculate(ref SPAData spa)
+	public static int SPACalculate(ref DataModel spa)
 	{
 		var result = ValidateInputs(ref spa);
 
 		if (result == 0)
 		{
-			spa.Jd = JulianDay(spa.Year, spa.Month, spa.Day, spa.Hour,
-				spa.Minute, spa.Second, spa.DeltaUt1, spa.Timezone);
+			spa.IntermediateOutput.Jd = JulianDay(spa.Time.Year, spa.Time.Month, spa.Time.Day, spa.Time.Hour,
+				spa.Time.Minute, spa.Time.Second, spa.TimeDeltas.DeltaUt1, spa.Time.Timezone);
 
 			CalculateGeocentricSunRightAscensionAndDeclination(ref spa);
 
-			spa.H = ObserverHourAngle(spa.Nu, spa.Longitude, spa.Alpha);
-			spa.Xi = SunEquatorialHorizontalParallax(spa.R);
+			spa.IntermediateOutput.H = ObserverHourAngle(spa.IntermediateOutput.Nu, spa.Enviroment.Longitude, spa.IntermediateOutput.Alpha);
+			spa.IntermediateOutput.Xi = SunEquatorialHorizontalParallax(spa.IntermediateOutput.R);
 
-			RightAscensionParallaxAndTopocentricDec(spa.Latitude, spa.Elevation, spa.Xi,
-				spa.H, spa.Delta, ref spa.DelAlpha, ref spa.DeltaPrime);
+			RightAscensionParallaxAndTopocentricDec(spa.Enviroment.Latitude, spa.Enviroment.Elevation, spa.IntermediateOutput.Xi,
+				spa.IntermediateOutput.H, spa.IntermediateOutput.Delta, ref spa.IntermediateOutput.DelAlpha, ref spa.IntermediateOutput.DeltaPrime);
 
-			spa.AlphaPrime = TopocentricRightAscension(spa.Alpha, spa.DelAlpha);
-			spa.HPrime = TopocentricLocalHourAngle(spa.H, spa.DelAlpha);
+			spa.IntermediateOutput.AlphaPrime = TopocentricRightAscension(spa.IntermediateOutput.Alpha, spa.IntermediateOutput.DelAlpha);
+			spa.IntermediateOutput.HPrime = TopocentricLocalHourAngle(spa.IntermediateOutput.H, spa.IntermediateOutput.DelAlpha);
 
-			spa.E0 = TopocentricElevationAngle(spa.Latitude, spa.DeltaPrime, spa.HPrime);
-			spa.DelE = AtmosphericRefractionCorrection(spa.Pressure, spa.Temperature,
-				spa.AtmosRefract, spa.E0);
-			spa.E = TopocentricElevationAngleCorrected(spa.E0, spa.DelE);
+			spa.IntermediateOutput.E0 = TopocentricElevationAngle(spa.Enviroment.Latitude, spa.IntermediateOutput.DeltaPrime, spa.IntermediateOutput.HPrime);
+			spa.IntermediateOutput.DelE = AtmosphericRefractionCorrection(spa.Enviroment.Pressure, spa.Enviroment.Temperature,
+				spa.Enviroment.AtmosRefract, spa.IntermediateOutput.E0);
+			spa.IntermediateOutput.E = TopocentricElevationAngleCorrected(spa.IntermediateOutput.E0, spa.IntermediateOutput.DelE);
 
-			spa.Zenith = TopocentricZenithAngle(spa.E);
-			spa.AzimuthAstro = TopocentricAzimuthAngleAstro(spa.HPrime, spa.Latitude,
-				spa.DeltaPrime);
-			spa.Azimuth = TopocentricAzimuthAngle(spa.AzimuthAstro);
+			spa.Output.Zenith = TopocentricZenithAngle(spa.IntermediateOutput.E);
+			spa.Output.AzimuthAstro = TopocentricAzimuthAngleAstro(spa.IntermediateOutput.HPrime, spa.Enviroment.Latitude,
+				spa.IntermediateOutput.DeltaPrime);
+			spa.Output.Azimuth = TopocentricAzimuthAngle(spa.Output.AzimuthAstro);
 
-			if (spa.Function == CalculationMode.ZAInc || spa.Function == CalculationMode.All)
-				spa.Incidence = SurfaceIncidenceAngle(spa.Zenith, spa.AzimuthAstro,
-					spa.AzmRotation, spa.Slope);
+			if (spa.Mode == CalculationMode.ZAInc || spa.Mode == CalculationMode.All)
+				spa.Output.Incidence = SurfaceIncidenceAngle(spa.Output.Zenith, spa.Output.AzimuthAstro,
+					spa.Enviroment.AzmRotation, spa.Enviroment.Slope);
 
-			if (spa.Function == CalculationMode.ZARts || spa.Function == CalculationMode.All)
+			if (spa.Mode == CalculationMode.ZARts || spa.Mode == CalculationMode.All)
 				CalculateEOTAndSunRiseTransitSet(ref spa);
 		}
 
