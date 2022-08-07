@@ -1,6 +1,6 @@
 namespace SPACalculator;
 
-public static class DegRadCalculator
+public static class DegRadCalc
 {
 	private const double RadToDegFactor = 180 / Consts.Pi;
 	private const double DegToRadFactor = Consts.Pi / 180;

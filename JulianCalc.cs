@@ -1,17 +1,17 @@
 namespace SPACalculator;
 
-public static class JulianCalculator
+public static class JulianCalc
 {
-	public static double JulianDay(int year, int month, int day, int hour, int minute, double second, double dut1,
-		double tz)
+	public static double JulianDay(int year, int month, int day, int hour, int minute,
+		double second, double dut1, double tz)
 	{
-		var dayDecimal = day + (hour - tz + (minute + (second + dut1) / 60.0) / 60.0) / 24.0;
-
 		if (month < 3)
 		{
 			month += 12;
 			year--;
 		}
+
+		var dayDecimal = day + (hour - tz + (minute + (second + dut1) / 60.0) / 60.0) / 24.0;
 
 		var julianDay = (int)(365.25 * (year + 4716.0)) + (int)(30.6001 * (month + 1)) + dayDecimal - 1524.5;
 

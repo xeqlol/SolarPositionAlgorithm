@@ -12,7 +12,7 @@ public class DataModel
 	public EnviromentModel Enviroment { get; set; }
 
 	//-----------------Intermediate OUTPUT VALUES--------------------
-	public IntermediateOutputModel IntermediateOutput { get; set; }
+	public IntermediateOutputModel MidOut { get; set; }
 
 	//---------------------Final OUTPUT VALUES------------------------
 	public OutputModel Output { get; set; }

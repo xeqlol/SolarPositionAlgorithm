@@ -79,8 +79,8 @@ public class IntermediateOutputModel
 	/// </summary>
 	public double Theta;
 
-	public JulianTimeModel JulianTimeModel { get; set; } = new();
-	public EarthIntermediateModel EarthIntermediateModel { get; set; } = new();
-	public SunItermediateModel SunItermediateModel { get; set; } = new();
-	public MoonIntermediateModel MoonIntermediateModel { get; set; } = new();
+	public JulianTimeModel JulianTime { get; } = new();
+	public EarthIntermediateModel EarthMidOut { get; } = new();
+	public SunItermediateModel SunMidOut { get; } = new();
+	public MoonIntermediateModel MoonMidOut { get; } = new();
 }
